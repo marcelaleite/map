@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Exemplo</title>
+    <link rel="stylesheet" href="./node_modules/leaflet/dist/leaflet.css">
+    <script src="./node_modules/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100vw;
+        }
+
+        #map{
+            height: 500px;
+        }
+        .logo{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        // adiciona o mapa
+        let map = L.map('map').setView([-27.21194,-49.64135],12);
+
+        // adiciona a camada que exibe os dados do mapa
+        //L.tileLayer('http://200.135.58.37:8080/{z}/{x}/{y}.png', {
+        //    maxZoom: 19,
+        //    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        //}).addTo(map);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        
+
+        // adicionar um marcador para exebir um local já cadastrado - esses dados vem do banco
+        var pontodecoleta = L.marker([-27.21208,-49.63978]).addTo(map);
+        //adicionar o nome do ponto de coleta 
+        pontodecoleta.bindPopup("<img class='logo' src='img/logo.png' alt='Instituto Federal Catarinense - <i>Campus</i> Rio do Sul' />");
+
+        // adicionando um popup
+        var popup = L.popup();
+
+        function onMapClick(e) {
+            popup
+                .setLatLng(e.latlng)
+                .setContent(e.latlng.toString())
+                .openOn(map);
+        }
+        
+        map.on('click', onMapClick);
+
+        // chamando a função assíncrona para contornar a cidade
+        // código de rio do sul 4214805
+        loadGeoJSON();
+
+        // adicionando um contorno para Rio do Sul, usando dados do IBGE em JSON
+        async function loadGeoJSON(){
+            try{
+                const request = await fetch("https://servicodados.ibge.gov.br/api/v3/malhas/municipios/4214805?formato=application/vnd.geo+json");
+                const response = await request.json();
+
+                // adicionar ao mapa a malha - contorno
+                L.geoJSON(response).addTo(map);
+            }catch (error){
+                console.log(error);
+            }
+        }
+
+
+    </script>
+
+</body>
+</html>
