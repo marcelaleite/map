@@ -33,17 +33,16 @@
         let map = L.map('map').setView([-27.21194,-49.64135],12);
 
         // adiciona a camada que exibe os dados do mapa
-        //L.tileLayer('http://200.135.58.37:8080/{z}/{x}/{y}.png', {
-        //    maxZoom: 19,
-        //    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        //}).addTo(map);
+       // L.tileLayer('http://200.135.58.37:8080/{z}/{x}/{y}.png', {
+       //    maxZoom: 19,
+       //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+       // }).addTo(map);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-        
-
+           maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+ 
         // adicionar um marcador para exebir um local já cadastrado - esses dados vem do banco
         var pontodecoleta = L.marker([-27.21208,-49.63978]).addTo(map);
         //adicionar o nome do ponto de coleta 
@@ -60,10 +59,46 @@
         }
         
         map.on('click', onMapClick);
+    
+        var myLines = [{
+            "type": "LineString",
+            "coordinates": [[-100, 40], [-105, 45], [-110, 55]]
+        }, {
+            "type": "LineString",
+            "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
+        }];
+
+        var geojsonFeature = {
+            "type": "Feature",
+            "properties": {
+                "name": "Coors Field",
+                "amenity": "Baseball Stadium",
+                "popupContent": "This is where the Rockies play!"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-104.99404, 39.75621]
+            }
+        };
+
+        L.geoJSON(geojsonFeature).addTo(map);
+
+        var myLayer = L.geoJSON().addTo(map);
+        myLayer.addData(geojsonFeature);
+
+        var myStyle = {
+            "color": "#ff7800",
+            "weight": 5,
+            "opacity": 0.65
+        };
+        
+        L.geoJSON(myLines, {
+            style: myStyle
+        }).addTo(map);
 
         // chamando a função assíncrona para contornar a cidade
         // código de rio do sul 4214805
-        loadGeoJSON();
+        //loadGeoJSON();
 
         // adicionando um contorno para Rio do Sul, usando dados do IBGE em JSON
         async function loadGeoJSON(){
